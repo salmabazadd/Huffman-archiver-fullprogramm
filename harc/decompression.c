@@ -22,7 +22,9 @@ unsigned char read_char(FILE* in, int *pos, unsigned char *buffer)
 	}
 	return c;
 }
-/*Восстановление дерева из файла*/
+
+/*Р’РѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёРµ РґРµСЂРµРІР° РёР· С„Р°Р№Р»Р°*/
+
 Tree *createNode(FILE *inputFile, int *pos, unsigned char *buffer)
 {
 	unsigned char c;
@@ -51,14 +53,18 @@ void decode(FILE *inputFile, FILE *outputFile, unsigned short *crc, UINT64 size)
 	fread(&dataSize, sizeof(UINT64), 1, inputFile);
 	if ((data = (char*)malloc(SizeOfBuf)) == NULL)
 		ALLOC_MEMORY_ERR
-		size -= sizeof(UINT64);//потому что в размере содержится размер закодированной части
+		size -= sizeof(UINT64);
+//РїРѕС‚РѕРјСѓ С‡С‚Рѕ РІ СЂР°Р·РјРµСЂРµ СЃРѕРґРµСЂР¶РёС‚СЃСЏ СЂР°Р·РјРµСЂ Р·Р°РєРѕРґРёСЂРѕРІР°РЅРЅРѕР№ С‡Р°СЃС‚Рё
+
 	computeCRC(data, inputFile, crc, size, WITHSHIFT);
 	unsigned char bufferTmp = 0;
 	int pos = 0;
 	Tree *root = createNode(inputFile,&pos,&bufferTmp);
 	Tree *tmp = root;
 	unsigned char c;
-	/*Декодирование с помощью прохода по дереву*/
+	
+/*Р”РµРєРѕРґРёСЂРѕРІР°РЅРёРµ СЃ РїРѕРјРѕС‰СЊСЋ РїСЂРѕС…РѕРґР° РїРѕ РґРµСЂРµРІСѓ*/
+
 	for (UINT64 i = 0; i < dataSize; i++)
 	{
 		c = read_bit(inputFile, &pos, &bufferTmp);

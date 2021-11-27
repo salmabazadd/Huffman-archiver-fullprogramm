@@ -40,7 +40,8 @@ void crc16(unsigned char * pcBlock, unsigned short len, unsigned short* crc)
 }
 void computeCRC(char *buf, FILE *inputFile, unsigned short *crc, UINT64 size,char withShift)
 {
-	//нужно запомнить, чтобы после подсчёта сдвинуться обратно
+	//РЅСѓР¶РЅРѕ Р·Р°РїРѕРјРЅРёС‚СЊ, С‡С‚РѕР±С‹ РїРѕСЃР»Рµ РїРѕРґСЃС‡С‘С‚Р° СЃРґРІРёРЅСѓС‚СЊСЃСЏ РѕР±СЂР°С‚РЅРѕ
+
 	UINT64 position = _ftelli64_nolock(inputFile); 
 	UINT64 temp = 0;
 	UINT64 temp2 = size;

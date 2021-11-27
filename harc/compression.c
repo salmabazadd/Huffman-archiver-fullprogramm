@@ -6,7 +6,9 @@ void deleteNode(Tree* root) {
 		free(root);
 	}
 }
-/*функция подсчёта частоты встречаемости для каждого символа*/
+
+/*С„СѓРЅРєС†РёСЏ РїРѕРґСЃС‡С‘С‚Р° С‡Р°СЃС‚РѕС‚С‹ РІСЃС‚СЂРµС‡Р°РµРјРѕСЃС‚Рё РґР»СЏ РєР°Р¶РґРѕРіРѕ СЃРёРјРІРѕР»Р°*/
+
 void createFrequencyArr(FILE *file, UINT64 *arr, UINT64 size)
 {
 	for (UINT64 i = 0; i < size; i++)
@@ -15,16 +17,19 @@ void createFrequencyArr(FILE *file, UINT64 *arr, UINT64 size)
 	}
 	return;
 }
-/*Функция вставки сначала в список, если mode = 0
-иначе вставка в дерево*/
+
+/*Р¤СѓРЅРєС†РёСЏ РІСЃС‚Р°РІРєРё СЃРЅР°С‡Р°Р»Р° РІ СЃРїРёСЃРѕРє, РµСЃР»Рё mode = 0
+РёРЅР°С‡Рµ РІСЃС‚Р°РІРєР° РІ РґРµСЂРµРІРѕ*/
+
 void insert(Tree **head, UINT64 count, int symbol, char mode)
 {
 	Tree* tmp = (Tree*)malloc(sizeof(Tree));
 	Tree* cur = NULL;
 	int flag = 0;
-	if (mode == 0)//добавление в список
+	if (mode == 0)//РґРѕР±Р°РІР»РµРЅРёРµ РІ СЃРїРёСЃРѕРє
+
 	{
-		//если список пуст
+		//РµСЃР»Рё СЃРїРёСЃРѕРє РїСѓСЃС‚ 
 		if (*head == NULL)
 		{
 			tmp->left = tmp->right = NULL;
@@ -34,7 +39,8 @@ void insert(Tree **head, UINT64 count, int symbol, char mode)
 			*head = tmp;
 			return;
 		}
-		if (count <= (*head)->count) /* вставить перед первым */
+		if (count <= (*head)->count) /* РІСЃС‚Р°РІРёС‚СЊ РїРµСЂРµРґ РїРµСЂРІС‹Рј */
+
 		{
 			tmp->count = count;
 			tmp->symbol = symbol;
@@ -45,13 +51,17 @@ void insert(Tree **head, UINT64 count, int symbol, char mode)
 		else
 		{
 			cur = (*head);
-			/* ищем позицию для вставки */
+			
+/* РёС‰РµРј РїРѕР·РёС†РёСЋ РґР»СЏ РІСЃС‚Р°РІРєРё */
+
 			while ((flag == 0) && (cur->next != NULL))
 			{
 				if ((cur->count < count) && (cur->next->count >= count)) flag = 1;
 				cur = cur->next;
 			}
-			if (flag == 0) /* позиция не найдена - вставить в конец */
+			if (flag == 0) 
+/* РїРѕР·РёС†РёСЏ РЅРµ РЅР°Р№РґРµРЅР° - РІСЃС‚Р°РІРёС‚СЊ РІ РєРѕРЅРµС† */
+
 			{
 				tmp->count = count;
 				tmp->symbol = symbol;
@@ -59,7 +69,9 @@ void insert(Tree **head, UINT64 count, int symbol, char mode)
 				tmp->next = NULL;
 				cur->next = tmp;
 			}
-			else /* позиция в середине найдена */
+			else 
+/* РїРѕР·РёС†РёСЏ РІ СЃРµСЂРµРґРёРЅРµ РЅР°Р№РґРµРЅР° */
+
 			{
 				tmp->count = count;
 				tmp->symbol = symbol;
@@ -69,10 +81,14 @@ void insert(Tree **head, UINT64 count, int symbol, char mode)
 			}
 		}
 	}
-	//добавление в дерево
+	
+//РґРѕР±Р°РІР»РµРЅРёРµ РІ РґРµСЂРµРІРѕ
+
 	else
 	{
-		if (count <= (*head)->count) /* вставить перед первым */
+		if (count <= (*head)->count) 
+/* РІСЃС‚Р°РІРёС‚СЊ РїРµСЂРµРґ РїРµСЂРІС‹Рј */
+
 		{
 			tmp->count = (*head)->count + (*head)->next->count;
 			tmp->symbol = NODE;
@@ -84,13 +100,16 @@ void insert(Tree **head, UINT64 count, int symbol, char mode)
 		else
 		{
 			cur = (*head);
-			/* ищем позицию для вставки */
+			 /* РёС‰РµРј РїРѕР·РёС†РёСЋ РґР»СЏ РІСЃС‚Р°РІРєРё */ 
 			while ((flag == 0) && (cur->next != NULL))
 			{
 				if ((cur->count < count) && (cur->next->count >= count)) flag = 1;
 				cur = cur->next;
 			}
-			if (flag == 0) /* позиция не найдена - вставить в конец */
+			if (flag == 0) 
+
+/* РїРѕР·РёС†РёСЏ РЅРµ РЅР°Р№РґРµРЅР° - РІСЃС‚Р°РІРёС‚СЊ РІ РєРѕРЅРµС† */
+
 			{
 				tmp->count = (*head)->count + (*head)->next->count;
 				tmp->symbol = NODE;
@@ -100,7 +119,8 @@ void insert(Tree **head, UINT64 count, int symbol, char mode)
 				cur->next = tmp;
 				(*head) = (*head)->next->next;
 			}
-			else /* позиция в середине найдена */
+			else /* РїРѕР·РёС†РёСЏ РІ СЃРµСЂРµРґРёРЅРµ РЅР°Р№РґРµРЅР° */
+
 			{
 				tmp->count = (*head)->count + (*head)->next->count;
 				tmp->symbol = NODE;
@@ -113,7 +133,9 @@ void insert(Tree **head, UINT64 count, int symbol, char mode)
 		}
 	}
 }
-/*Создание дерева Хаффмана*/
+
+/*РЎРѕР·РґР°РЅРёРµ РґРµСЂРµРІР° РҐР°С„С„РјР°РЅР°*/
+
 int makeHuffmanTree(Tree **head)
 {
 	int counter = 0;
@@ -126,7 +148,9 @@ int makeHuffmanTree(Tree **head)
 	}
 	return counter;
 }
-/*Построение неравномерного кода с помощью дерева Хаффмана*/
+
+/*РџРѕСЃС‚СЂРѕРµРЅРёРµ РЅРµСЂР°РІРЅРѕРјРµСЂРЅРѕРіРѕ РєРѕРґР° СЃ РїРѕРјРѕС‰СЊСЋ РґРµСЂРµРІР° РҐР°С„С„РјР°РЅР°*/
+
 void CodeTable(Tree *root, char codes[256][256], char vrm[256], int flag)
 {
 	char tmp[256];
@@ -163,14 +187,16 @@ void CharToString(char *SymBuf, char c)
 	}
 }
 /*
-Функция записи бит
-pos - позиция в буфере(0 до 7)
-buffer - накапливаемый до байта набор битов
-value - массив символов, который мы добавляем
-*/
+Р¤СѓРЅРєС†РёСЏ Р·Р°РїРёСЃРё Р±РёС‚
+pos - РїРѕР·РёС†РёСЏ РІ Р±СѓС„РµСЂРµ(0 РґРѕ 7)
+buffer - РЅР°РєР°РїР»РёРІР°РµРјС‹Р№ РґРѕ Р±Р°Р№С‚Р° РЅР°Р±РѕСЂ Р±РёС‚РѕРІ
+value - РјР°СЃСЃРёРІ СЃРёРјРІРѕР»РѕРІ, РєРѕС‚РѕСЂС‹Р№ РјС‹ РґРѕР±Р°РІР»СЏРµРј
+*/ 
+
 UINT64 writeBits(FILE *file, int *position, unsigned char *buffer, char *value, unsigned short *crc)
 {
-	int written = 0;//для подсчёта размера (в байтах)
+	int written = 0;//РґР»СЏ РїРѕРґСЃС‡С‘С‚Р° СЂР°Р·РјРµСЂР° (РІ Р±Р°Р№С‚Р°С…)
+
 	int bit;
 	while (*value)
 	{
@@ -195,9 +221,11 @@ UINT64 writeBits(FILE *file, int *position, unsigned char *buffer, char *value, 
 	}
 	return written;
 }
-/*Функция записи дерева в файл
-0-если узел, 1 - если лист, за 1 всегда следует код символа
+
+/*Р¤СѓРЅРєС†РёСЏ Р·Р°РїРёСЃРё РґРµСЂРµРІР° РІ С„Р°Р№Р»
+0-РµСЃР»Рё СѓР·РµР», 1 - РµСЃР»Рё Р»РёСЃС‚, Р·Р° 1 РІСЃРµРіРґР° СЃР»РµРґСѓРµС‚ РєРѕРґ СЃРёРјРІРѕР»Р°
 */
+
 void WriteTree(Tree* root, unsigned char *buffer, int *position, FILE *outputFile, unsigned short *crc, int flag)
 {
 	char SymBuf[] = { "00000000" };
@@ -219,7 +247,9 @@ void WriteTree(Tree* root, unsigned char *buffer, int *position, FILE *outputFil
 	CharToString(SymBuf, (char)(root->symbol));
 	writeBits(outputFile, position, buffer, SymBuf, crc);
 }
-/*Кодирование содержимого файла*/
+
+/*РљРѕРґРёСЂРѕРІР°РЅРёРµ СЃРѕРґРµСЂР¶РёРјРѕРіРѕ С„Р°Р№Р»Р°*/
+
 UINT64 writeData(char codes[256][256], int *position, unsigned char *buffer, FILE *inputFile, FILE *outputFile, UINT64 size, unsigned short *crc)
 {
 	int c;
@@ -235,7 +265,8 @@ UINT64 writeData(char codes[256][256], int *position, unsigned char *buffer, FIL
 
 void encode(FILE *inputFile, FILE *outputFile, UINT64 fileSize, unsigned short *crc)
 {
-	UINT64 arr[256] = { 0 },//массив для хранения count
+	UINT64 arr[256] = { 0 },//РјР°СЃСЃРёРІ РґР»СЏ С…СЂР°РЅРµРЅРёСЏ count
+
 		placeBeforeTree = 0,
 		writtenData = 0,
 		posAtBegin = _ftelli64_nolock(inputFile);
@@ -243,10 +274,13 @@ void encode(FILE *inputFile, FILE *outputFile, UINT64 fileSize, unsigned short *
 	char vrm[256] = { '\0' };
 	char codes[256][256] = { '\0' };
 	int pos = 0;
-	unsigned char bufferTmp = 0; // Буфер в который будем писать
+	unsigned char bufferTmp = 0; // Р‘СѓС„РµСЂ, РІ РєРѕС‚РѕСЂС‹Р№ Р±СѓРґРµРј РїРёСЃР°С‚СЊ
+
 	char posInWRTree;
 	createFrequencyArr(inputFile, arr, fileSize);
-	/*Вставка элементов в список*/
+	
+/*Р’СЃС‚Р°РІРєР° СЌР»РµРјРµРЅС‚РѕРІ РІ СЃРїРёСЃРѕРє*/
+
 	for (int i = 0; i < 256; i++)
 	{
 		if (arr[i] != 0)
@@ -255,16 +289,25 @@ void encode(FILE *inputFile, FILE *outputFile, UINT64 fileSize, unsigned short *
 		}
 	}
 	int flag = makeHuffmanTree(&head);
-	CodeTable(head, codes, vrm, flag);// Построение кодов для символов
+	CodeTable(head, codes, vrm, flag);
+// РџРѕСЃС‚СЂРѕРµРЅРёРµ РєРѕРґРѕРІ РґР»СЏ СЃРёРјРІРѕР»РѕРІ
+
 	placeBeforeTree = _ftelli64_nolock(outputFile);
 	_fseeki64_nolock(outputFile, sizeof(UINT64), SEEK_CUR);
-	// Записываем дерево
+
+// Р—Р°РїРёСЃС‹РІР°РµРј РґРµСЂРµРІРѕ
+
 	WriteTree(head, &bufferTmp, &pos, outputFile, crc, flag);
-	_fseeki64_nolock(inputFile, posAtBegin, SEEK_SET);//сдвиг в начало инпут файла для кодирования
-	posInWRTree = pos;//запоминаем позицию в буфере при записи дерева в файл
+	_fseeki64_nolock(inputFile, posAtBegin, SEEK_SET);
+//СЃРґРІРёРі РІ РЅР°С‡Р°Р»Рѕ РёРЅРїСѓС‚ С„Р°Р№Р»Р° РґР»СЏ РєРѕРґРёСЂРѕРІР°РЅРёСЏ
+
+	posInWRTree = pos;
+//Р·Р°РїРѕРјРёРЅР°РµРј РїРѕР·РёС†РёСЋ РІ Р±СѓС„РµСЂРµ РїСЂРё Р·Р°РїРёСЃРё РґРµСЂРµРІР° РІ С„Р°Р№Р»
+
 	writtenData = writeData(codes, &pos, &bufferTmp, inputFile, outputFile, fileSize, crc);
 	writtenData *= 8;
-	if (pos != 0)//дозапись последнего байта
+	if (pos != 0)//РґРѕР·Р°РїРёСЃСЊ РїРѕСЃР»РµРґРЅРµРіРѕ Р±Р°Р№С‚Р°
+
 	{
 		fwrite(&bufferTmp, sizeof(char), 1, outputFile);
 		crc16(&bufferTmp, 1, crc);
@@ -272,11 +315,14 @@ void encode(FILE *inputFile, FILE *outputFile, UINT64 fileSize, unsigned short *
 		writtenData += pos;
 		pos = 0;
 	}
-	//размер закодированной части без дерева
+	
+//СЂР°Р·РјРµСЂ Р·Р°РєРѕРґРёСЂРѕРІР°РЅРЅРѕР№ С‡Р°СЃС‚Рё Р±РµР· РґРµСЂРµРІР°
+
 	writtenData -= posInWRTree;
 	fflush(outputFile);
 	_fseeki64_nolock(outputFile, placeBeforeTree, SEEK_SET);
-	//запись размера закодированной части
+	//Р·Р°РїРёСЃСЊ СЂР°Р·РјРµСЂР° Р·Р°РєРѕРґРёСЂРѕРІР°РЅРЅРѕР№ С‡Р°СЃС‚Рё
+
 	fwrite(&writtenData, sizeof(UINT64), 1, outputFile);
 	_fseeki64_nolock(outputFile, 0, SEEK_END);
 	deleteNode(head);

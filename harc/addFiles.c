@@ -1,17 +1,19 @@
-#include "header.h";
+#include "header.h"
+
 int addFiles(char *archiveName, char **fileNames,int *amountOfFiles, Info **ptrOnStruct)
 {
 	unsigned short crc = CRC;
 	const unsigned int ussd = SIGNATURE;
 	struct _stat64 info;
-	UINT64 posForWRCRC;//позиция для записи crc
+	UINT64 posForWRCRC; //РїРѕР·РёС†РёСЏ РґР»СЏ Р·Р°РїРёСЃРё crc
+
 	UINT64 posForWRSize;
 	UINT64 realSize;
 	char percentCompression;
 	unsigned int TMPussd = 0;//signature
 	char *data = NULL;
 	FILE *fin = NULL, *tmp=NULL, *fout = NULL;
-	int makeTmpArchieve;//создавать временный архив или нет(флаг)
+	int makeTmpArchieve;//СЃРѕР·РґР°РІР°С‚СЊ РІСЂРµРјРµРЅРЅС‹Р№ Р°СЂС…РёРІ РёР»Рё РЅРµС‚(С„Р»Р°Рі)
 	int u = 0; 
 	switch (makeTmpArchieve = isEmptyFile(archiveName))
 	{
@@ -30,7 +32,7 @@ int addFiles(char *archiveName, char **fileNames,int *amountOfFiles, Info **ptrO
 			if (checkUssd(archiveName, SIGNATURE) != 0) return 1;
 			break;
 	}
-	//в цикле просто по порядку добавляем в пустой архив
+	//РІ С†РёРєР»Рµ РїСЂРѕСЃС‚Рѕ РїРѕ РїРѕСЂСЏРґРєСѓ РґРѕР±Р°РІР»СЏРµРј РІ РїСѓСЃС‚РѕР№ Р°СЂС…РёРІ
 	if ((makeTmpArchieve == 0) || (makeTmpArchieve == 1))
 	{
 		
@@ -40,23 +42,26 @@ int addFiles(char *archiveName, char **fileNames,int *amountOfFiles, Info **ptrO
 		{
 				_stat64(fileNames[u], &info);
 				if (accessRights(fileNames[u], READING) != 1) {
-					printf("[WARNING:]Файл %s не имеет прав на чтение\n", archiveName);
+					printf("[WARNING:]Р¤Р°Р№Р» %s РЅРµ РёРјРµРµС‚ РїСЂР°РІ РЅР° С‡С‚РµРЅРёРµ\n", archiveName);
 					return 0;
 				}
 				if ((fin = fopen(fileNames[u], "rb")) == NULL)
 					OPEN_ERR
-			//заполнение полей структуры
-				(*ptrOnStruct)->lengthName = strlen(shortNameOnly(fileNames[u])); //длина имени файла
+			//Р·Р°РїРѕР»РЅРµРЅРёРµ РїРѕР»РµР№ СЃС‚СЂСѓРєС‚СѓСЂС‹
+
+				(*ptrOnStruct)->lengthName = strlen(shortNameOnly(fileNames[u])); //РґР»РёРЅР° РёРјРµРЅРё С„Р°Р№Р»Р°
+
 				strcpy((*ptrOnStruct)->name, shortNameOnly(fileNames[u]));
 				(*ptrOnStruct)->size = info.st_size;
 				if (compressOrNot((*ptrOnStruct)->size))
 					(*ptrOnStruct)->flags = COMPRESSED;
 				else (*ptrOnStruct)->flags = NOTCOMPRESSED;
 				(*ptrOnStruct)->compression = 0;
-			//запись данных в архив
+			//Р·Р°РїРёСЃСЊ РґР°РЅРЅС‹С… РІ Р°СЂС…РёРІ 
 					_fseeki64_nolock(fout, 0, SEEK_END);
 					 posForWRCRC = _ftelli64_nolock(fout);
-					(*ptrOnStruct)->checkSum = crc;//контрольная сумма
+					(*ptrOnStruct)->checkSum = crc;//РєРѕРЅС‚СЂРѕР»СЊРЅР°СЏ СЃСѓРјРјР°
+
 					if ((fwrite(&((*ptrOnStruct)->checkSum), SIZE_CHECKSUM, 1, fout)) != 1)
 						WRITING_DATA_ERR
 					if ((fwrite(&((*ptrOnStruct)->lengthName), SIZE_LENGTHNAME, 1, fout)) != 1)
@@ -70,7 +75,7 @@ int addFiles(char *archiveName, char **fileNames,int *amountOfFiles, Info **ptrO
 					posForWRSize = _ftelli64_nolock(fout);
 					if (fwrite(&((*ptrOnStruct)->size), SIZE_SIZE, 1, fout) != 1)
 						WRITING_DATA_ERR
-			//запись файла
+			//Р·Р°РїРёСЃСЊ С„Р°Р№Р»Р°
 					crc = CRC;
 					if (compressOrNot((*ptrOnStruct)->size))
 						encode(fin, fout, getSize(fin),&crc);
@@ -83,14 +88,16 @@ int addFiles(char *archiveName, char **fileNames,int *amountOfFiles, Info **ptrO
 					fflush(fout);
 					realSize = _ftelli64_nolock(fout) - posForWRSize - SIZE_SIZE;
 					percentCompression = (char)(compressionRatio((double)(*ptrOnStruct)->size, (double)realSize));
-			//сдвиг для записи размера
-			// -1 для записи процента сжатия
+			///СЃРґРІРёРі РґР»СЏ Р·Р°РїРёСЃРё СЂР°Р·РјРµСЂР°
+			// -1 РґР»СЏ Р·Р°РїРёСЃРё РїСЂРѕС†РµРЅС‚Р° СЃР¶Р°С‚РёСЏ
+
 					_fseeki64_nolock(fout,posForWRSize-1, SEEK_SET);
 					if ((fwrite(&percentCompression, SIZE_FLAGS, 1, fout)) != 1)
 						WRITING_DATA_ERR
 					if ((fwrite(&realSize, SIZE_SIZE, 1, fout)) != 1)
 						WRITING_DATA_ERR
-			//сдвиг обратно для записи контрольной суммы
+			//СЃРґРІРёРі РѕР±СЂР°С‚РЅРѕ РґР»СЏ Р·Р°РїРёСЃРё РєРѕРЅС‚СЂРѕР»СЊРЅРѕР№ СЃСѓРјРјС‹
+
 					_fseeki64_nolock(fout, posForWRCRC, SEEK_SET);
 					(*ptrOnStruct)->checkSum = crc;
 					if ((fwrite(&((*ptrOnStruct)->checkSum), SIZE_CHECKSUM, 1, fout)) != 1)
@@ -100,27 +107,32 @@ int addFiles(char *archiveName, char **fileNames,int *amountOfFiles, Info **ptrO
 		fcloseall;
 	}
 	
-	else //если нужно создавать временный архив
+	else //РµСЃР»Рё РЅСѓР¶РЅРѕ СЃРѕР·РґР°РІР°С‚СЊ РІСЂРµРјРµРЅРЅС‹Р№ Р°СЂС…РёРІ
+
 	{
 		if ((fin = fopen(archiveName, "rb+")) == NULL)
 			OPEN_ERR
-		//создание временного файла
+		//СЃРѕР·РґР°РЅРёРµ РІСЂРµРјРµРЅРЅРѕРіРѕ С„Р°Р№Р»Р°
+
 		char *tmpArchiveName =NULL;
 		tmpArchiveName = uniqName();
 		if ((tmp = fopen(tmpArchiveName, "wb+")) == NULL)
 			OPEN_ERR
-		//запись сигнатуры во временный архив
+		//Р·Р°РїРёСЃСЊ СЃРёРіРЅР°С‚СѓСЂС‹ РІРѕ РІСЂРµРјРµРЅРЅС‹Р№ Р°СЂС…РёРІ
+
 		if ((fwrite(&(ussd), sizeof(unsigned int), 1, tmp))!= 1)
 			WRITING_DATA_ERR fflush(tmp);
 		UINT64 endOFFile = getSize(fin);
-		//чтение сигнатуры
+		//С‡С‚РµРЅРёРµ СЃРёРіРЅР°С‚СѓСЂС‹
+
 		if (fread(&TMPussd, SIZE_SIGNATURE, 1 , fin) != 1)
 			READING_DATA_ERR
 		while ((_ftelli64_nolock(fin)) != endOFFile)
 		{
-			//флаг = 1 , если совпадёт хоть один файл
+			// С„Р»Р°Рі = 1 , РµСЃР»Рё СЃРѕРІРїР°РґС‘С‚ С…РѕС‚СЊ РѕРґРёРЅ С„Р°Р№Р»
 			int flag = 0;
-			int y;//переменная для цикла for(поиск повторов)
+			int y;//РїРµСЂРµРјРµРЅРЅР°СЏ РґР»СЏ С†РёРєР»Р° for(РїРѕРёСЃРє РїРѕРІС‚РѕСЂРѕРІ)
+
 			if ((fread(&((*ptrOnStruct)->checkSum), SIZE_CHECKSUM, 1 , fin)) != 1)
 				READING_DATA_ERR
 			if ((fread(&((*ptrOnStruct)->lengthName), SIZE_LENGTHNAME , 1 ,fin))!= 1)
@@ -148,10 +160,11 @@ int addFiles(char *archiveName, char **fileNames,int *amountOfFiles, Info **ptrO
 					}
 				}
 				free(TMP2name);
-				//если есть совпадение, то мы просто пропускаем данный файл и смотрим следующий
+				//РµСЃР»Рё РµСЃС‚СЊ СЃРѕРІРїР°РґРµРЅРёРµ, С‚Рѕ РјС‹ РїСЂРѕСЃС‚Рѕ РїСЂРѕРїСѓСЃРєР°РµРј РґР°РЅРЅС‹Р№ С„Р°Р№Р» Рё СЃРјРѕС‚СЂРёРј СЃР»РµРґСѓСЋС‰РёР№
 				if (flag)
 				{
-					//нужно сдвинуться на размер файла
+					//РЅСѓР¶РЅРѕ СЃРґРІРёРЅСѓС‚СЊСЃСЏ РЅР° СЂР°Р·РјРµСЂ С„Р°Р№Р»Р°
+
 					_fseeki64_nolock(fin, (*ptrOnStruct)->size, SEEK_CUR);
 					flag = 0;
 					free(data);
@@ -159,7 +172,8 @@ int addFiles(char *archiveName, char **fileNames,int *amountOfFiles, Info **ptrO
 				}
 				else
 				{
-				//записываем во временный архив
+				//Р·Р°РїРёСЃС‹РІР°РµРј РІРѕ РІСЂРµРјРµРЅРЅС‹Р№ Р°СЂС…РёРІ
+
 				_fseeki64_nolock(tmp, 0, SEEK_END);
 				if ((fwrite(&((*ptrOnStruct)->checkSum), SIZE_CHECKSUM, 1, tmp)) != 1)
 				WRITING_DATA_ERR
@@ -173,7 +187,8 @@ int addFiles(char *archiveName, char **fileNames,int *amountOfFiles, Info **ptrO
 				WRITING_DATA_ERR
 				if (fwrite(&((*ptrOnStruct)->size), SIZE_SIZE, 1, tmp) != 1)
 				WRITING_DATA_ERR
-						//запись самого файла
+						//Р·Р°РїРёСЃСЊ СЃР°РјРѕРіРѕ С„Р°Р№Р»Р°
+
 				if ((data = (char*)malloc(SizeOfBuf)) == NULL)
 					ALLOC_MEMORY_ERR
 				writeDataToFile(data, fin, tmp, &crc, (*ptrOnStruct)->size);
@@ -181,16 +196,19 @@ int addFiles(char *archiveName, char **fileNames,int *amountOfFiles, Info **ptrO
 				fflush(tmp);
 			}
 	}
-		//закрываем наш архив
+		//Р·Р°РєСЂС‹РІР°РµРј РЅР°С€ Р°СЂС…РёРІ
+
 		if (fclose(fin) == -1)
 			CLOSING_FILE_ERR
-		//теперь во временный нужно переписать то, что было в основном
+		//С‚РµРїРµСЂСЊ РІРѕ РІСЂРµРјРµРЅРЅС‹Р№ РЅСѓР¶РЅРѕ РїРµСЂРµРїРёСЃР°С‚СЊ С‚Рѕ, С‡С‚Рѕ Р±С‹Р»Рѕ РІ РѕСЃРЅРѕРІРЅРѕРј
+
 			for (int t = 0; t < amountOfFiles; t++)
 			{
 				_stat64(fileNames[t], &info);
 				if ((fin = fopen(fileNames[t], "rb")) == NULL)
 					OPEN_ERR
-				//заполнение данных
+				//Р·Р°РїРѕР»РЅРµРЅРёРµ РґР°РЅРЅС‹С…
+
 				(*ptrOnStruct)->checkSum = crc;
 				(*ptrOnStruct)->lengthName = strlen(shortNameOnly(fileNames[t]));
 				strcpy((*ptrOnStruct)->name, shortNameOnly(fileNames[t]));
@@ -199,7 +217,8 @@ int addFiles(char *archiveName, char **fileNames,int *amountOfFiles, Info **ptrO
 					(*ptrOnStruct)->flags = COMPRESSED;
 				else (*ptrOnStruct)->flags = NOTCOMPRESSED;
 				(*ptrOnStruct)->compression = 0;
-				//запись данных
+				//Р·Р°РїРёСЃСЊ РґР°РЅРЅС‹С…
+
 				_fseeki64_nolock(tmp, 0, SEEK_END);
 				posForWRCRC = _ftelli64_nolock(tmp);
 				if ((fwrite(&((*ptrOnStruct)->checkSum), SIZE_CHECKSUM, 1, tmp)) != 1)
@@ -215,7 +234,8 @@ int addFiles(char *archiveName, char **fileNames,int *amountOfFiles, Info **ptrO
 				posForWRSize = _ftelli64_nolock(tmp);
 				if (fwrite(&((*ptrOnStruct)->size), SIZE_SIZE, 1, tmp) != 1)
 				WRITING_DATA_ERR
-				//чтение и запись самого файла
+				//С‡С‚РµРЅРёРµ Рё Р·Р°РїРёСЃСЊ СЃР°РјРѕРіРѕ С„Р°Р№Р»Р°
+
 				crc = CRC;
 				if (compressOrNot((*ptrOnStruct)->size))
 					encode(fin, tmp, getSize(fin), &crc);
@@ -233,9 +253,9 @@ int addFiles(char *archiveName, char **fileNames,int *amountOfFiles, Info **ptrO
 					WRITING_DATA_ERR
 				if ((fwrite(&realSize, SIZE_SIZE, 1, tmp)) != 1)
 					WRITING_DATA_ERR
-				//сдвиг обратно для записи контрольной суммы
+				//СЃРґРІРёРі РѕР±СЂР°С‚РЅРѕ РґР»СЏ Р·Р°РїРёСЃРё РєРѕРЅС‚СЂРѕР»СЊРЅРѕР№ СЃСѓРјРјС‹
 				_fseeki64_nolock(tmp, posForWRCRC, SEEK_SET);
-				(*ptrOnStruct)->checkSum = crc;//контрольная сумма
+				(*ptrOnStruct)->checkSum = crc;//РєРѕРЅС‚СЂРѕР»СЊРЅР°СЏ СЃСѓРјРјР° 
 				if ((fwrite(&((*ptrOnStruct)->checkSum), sizeof(unsigned short), 1, tmp)) != 1)
 					WRITING_DATA_ERR
 				_fseeki64_nolock(tmp, 0, SEEK_END);
@@ -244,11 +264,12 @@ int addFiles(char *archiveName, char **fileNames,int *amountOfFiles, Info **ptrO
 			}
 		if (fclose(tmp) == -1)
 			CLOSING_FILE_ERR
-			//удалить архив переименовать temp
+			//СѓРґР°Р»РёС‚СЊ Р°СЂС…РёРІ РїРµСЂРµРёРјРµРЅРѕРІР°С‚СЊ temp
+
 			if (remove(archiveName) == -1)
 				perror("[ERROR]:Could not delete %s\n",archiveName);
 			if (rename(tmpArchiveName, archiveName) == -1)
-				printf("[ERROR]:Не удалось переименовать временный архив\n");
+				printf("[ERROR]:РќРµ СѓРґР°Р»РѕСЃСЊ РїРµСЂРµРёРјРµРЅРѕРІР°С‚СЊ РІСЂРµРјРµРЅРЅС‹Р№ Р°СЂС…РёРІ\n");
 	}
 	return 0;
 }

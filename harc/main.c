@@ -1,9 +1,10 @@
 #include "header.h"
+
 int main(int argc, char *argv[]) {
 	setlocale(LC_ALL, "RUS");
 		if (toggleSwitch(argv[1], argc, argv))
 		{
-			printf("[WARNING]: Была введена неизвестная опция\n");
+			printf("[WARNING]: Р‘С‹Р»Р° РІРІРµРґРµРЅР° РЅРµРёР·РІРµСЃС‚РЅР°СЏ РѕРїС†РёСЏ\n");
 			printHelp();
 			return 0;
 		}

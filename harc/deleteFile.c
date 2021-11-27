@@ -6,10 +6,12 @@ char delete(char *archiveName, char *fileName, Info **ptrOnStruct)
 	UINT64 size;
 	char *data = NULL;
 	char flagFounded = 0;
-	char *TMP2name = NULL; 	//короткая строка для правильного сравнения
+	char *TMP2name = NULL; 	
+//РєРѕСЂРѕС‚РєР°СЏ СЃС‚СЂРѕРєР° РґР»СЏ РїСЂР°РІРёР»СЊРЅРѕРіРѕ СЃСЂР°РІРЅРµРЅРёСЏ
+
 	unsigned int ussd = SIGNATURE;
 	if (accessRights(archiveName,READING) != 1) {
-		printf("[WARNING:]Архив %s не имеет прав на чтение\n", archiveName);
+		printf("[WARNING:]РђСЂС…РёРІ %s РЅРµ РёРјРµРµС‚ РїСЂР°РІ РЅР° С‡С‚РµРЅРёРµ\n", archiveName);
 		return 0;
 	}
 	if ((archive = fopen(archiveName,"rb")) == NULL)
@@ -40,7 +42,9 @@ char delete(char *archiveName, char *fileName, Info **ptrOnStruct)
 				ALLOC_MEMORY_ERR
 			strncpy((TMP2name), (*ptrOnStruct)->name, (*ptrOnStruct)->lengthName);
 			TMP2name[(*ptrOnStruct)->lengthName] = '\0';
-			//если совпали
+			
+//РµСЃР»Рё СЃРѕРІРїР°Р»Рё
+
 				if (!strcmp(TMP2name, fileName))
 				{	
 					flagFounded = 1;
@@ -49,7 +53,9 @@ char delete(char *archiveName, char *fileName, Info **ptrOnStruct)
 						FSEEK_ERR
 					continue;
 				}
-			//иначе не совпали - то есть нужно переписать в темп
+			
+//РёРЅР°С‡Рµ РЅРµ СЃРѕРІРїР°Р»Рё - С‚Рѕ РµСЃС‚СЊ РЅСѓР¶РЅРѕ РїРµСЂРµРїРёСЃР°С‚СЊ РІ С‚РµРјРї
+
 			if ((fwrite(&((*ptrOnStruct)->checkSum), SIZE_CHECKSUM, 1, tmp)) != 1)
 				WRITING_DATA_ERR
 			if ((fwrite(&((*ptrOnStruct)->lengthName), SIZE_LENGTHNAME, 1, tmp)) != 1)
@@ -74,15 +80,17 @@ char delete(char *archiveName, char *fileName, Info **ptrOnStruct)
 	if (remove(archiveName) == -1)
 		perror("[ERROR:] Could not delete %s\n", archiveName);
 	if (rename(tmpArchiveName, archiveName) == -1)
-		printf("[ERROR:] Не удалось переименовать временный архив\n");
-	//если файл не нашли
+		printf("[ERROR:]РќРµ СѓРґР°Р»РѕСЃСЊ РїРµСЂРµРёРјРµРЅРѕРІР°С‚СЊ РІСЂРµРјРµРЅРЅС‹Р№ Р°СЂС…РёРІ\n");
+	
+//РµСЃР»Рё С„Р°Р№Р» РЅРµ РЅР°С€Р»Рё
+
 	if (!flagFounded)
 	{
-		printf("[WARNING:] Файл %s отсутствует в архиве %s \n", fileName, archiveName);
+		printf("[WARNING:]Р¤Р°Р№Р» %s РѕС‚СЃСѓС‚СЃС‚РІСѓРµС‚ РІ Р°СЂС…РёРІ %s \n", fileName, archiveName);
 		return 1;
 	}
-	else printf("[SUCCSESS:] Файл %s был успешно удалён из архива %s \n", fileName, archiveName);
-	//после удаления может остаться лишь одна сигнатура
+	else printf("[SUCCSESS:]Р¤Р°Р№Р» %s Р±С‹Р» СѓСЃРїРµС€РЅРѕ СѓРґР°Р»С‘РЅ РёР· Р°СЂС…РёРІР° %s \n", fileName, archiveName);
+//РїРѕСЃР»Рµ СѓРґР°Р»РµРЅРёСЏ РјРѕР¶РµС‚ РѕСЃС‚Р°С‚СЊСЃСЏ Р»РёС€СЊ РѕРґРЅР° СЃРёРіРЅР°С‚СѓСЂР° 
 	if ((archive = fopen(archiveName, "rb")) == NULL)
 		OPEN_ERR
 	size = getSize(archive);
@@ -90,18 +98,18 @@ char delete(char *archiveName, char *fileName, Info **ptrOnStruct)
 		CLOSING_FILE_ERR
 	if (size == SIZE_SIGNATURE)
 	{
-		printf("[WARNING:] В архиве %s сожержится лишь сигнатура, хотите удалить архив? Y/N\n",archiveName);
+		printf("[WARNING:] Р’ Р°СЂС…РёРІРµ %s СЃРѕР¶РµСЂР¶РёС‚СЃСЏ Р»РёС€СЊ СЃРёРіРЅР°С‚СѓСЂР°, С…РѕС‚РёС‚Рµ СѓРґР°Р»РёС‚СЊ Р°СЂС…РёРІ? Y/N\n",archiveName);
 		char answer;
 		answer = getchar();
-		if ((answer == 'Y') || (answer == 'y') || (answer == 'н'))
+		if ((answer == 'Y') || (answer == 'y') || (answer == 'пїЅ'))
 		{
 			if (remove(archiveName) == -1)
 				perror("[ERROR]Could not delete %s\n", archiveName);
-			printf("Успешно удалено!\n");
+			printf("РЈСЃРїРµС€РЅРѕ СѓРґР°Р»РµРЅРѕ!\n");
 		}
 		else
 		{
-			printf("Удаление отменено\n");
+			printf("РЈРґР°Р»РµРЅРёРµ РѕС‚РјРµРЅРµРЅРѕ\n");
 			return 0;
 		}
 	}

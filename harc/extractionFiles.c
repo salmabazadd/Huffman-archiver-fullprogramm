@@ -1,4 +1,5 @@
 #include "header.h"
+
 int extractFiles(List **listOfFiles,FILE *archive)
 {
 	unsigned short crc = CRC;
@@ -41,7 +42,8 @@ int extractFiles(List **listOfFiles,FILE *archive)
 				temp = (*listOfFiles);
 				while (temp)
 				{
-						if (!strcmp(temp->file, tmpFileName))//если они совпали
+						if (!strcmp(temp->file, tmpFileName))//РµСЃР»Рё РѕРЅРё СЃРѕРІРїР°Р»Рё
+
 						{
 							flagForDeleting = 1;
 							newFile = NULL;
@@ -66,8 +68,9 @@ int extractFiles(List **listOfFiles,FILE *archive)
 								{
 									decode(archive, newFile,&crc, (ptrOnStruct)->size);
 								}
-							if (crc != (ptrOnStruct)->checkSum) //сравнение crc после извлечения
-							printf("[WARNING:] В процессе извлечения файл был повреждён:(\n");
+							if (crc != (ptrOnStruct)->checkSum) //СЃСЂР°РІРЅРµРЅРёРµ crc РїРѕСЃР»Рµ РёР·РІР»РµС‡РµРЅРёСЏ
+
+							printf("[WARNING:] Р’ РїСЂРѕС†РµСЃСЃРµ РёР·РІР»РµС‡РµРЅРёСЏ С„Р°Р№Р» Р±С‹Р» РїРѕРІСЂРµР¶РґС‘РЅ:(\n");
 							count =deleteByValue(listOfFiles, tmpFileName);
 							fflush(newFile);
 							if (fclose(newFile) == -1)
@@ -78,18 +81,18 @@ int extractFiles(List **listOfFiles,FILE *archive)
 				}
 				if (flagForDeleting == 0)
 				{
-					_fseeki64_nolock(archive, ptrOnStruct->size, SEEK_CUR);//сдвигаемся на размер файла
+					_fseeki64_nolock(archive, ptrOnStruct->size, SEEK_CUR);//СЃРґРІРёРіР°РµРјСЃСЏ РЅР° СЂР°Р·РјРµСЂ С„Р°Р№Р»Р° 
 				}
 				else
 				{
-					flagForDeleting = 0;
-					//???????????
+					flagForDeleting = 0; //???????????
 					break;
 				}
 				free(tmpFileName);
 				continue;
 			}
-		//извлечь все
+		
+			//РёР·РІР»РµС‡СЊ РІСЃРµ
 			newFile = NULL;
 			if (fileExists(tmpFileName))
 			{
@@ -113,8 +116,9 @@ int extractFiles(List **listOfFiles,FILE *archive)
 				{
 					decode(archive, newFile, &crc, (ptrOnStruct)->size);
 				}
-			if (crc != (ptrOnStruct)->checkSum) //сравнение crc после извлечения
-				printf("[WARNING:] В процессе извлечения файл был повреждён:(\n");
+			if (crc != (ptrOnStruct)->checkSum) //СЃСЂР°РІРЅРµРЅРёРµ crc РїРѕСЃР»Рµ РёР·РІР»РµС‡РµРЅРёСЏ
+
+				printf("[WARNING:] Р’ РїСЂРѕС†РµСЃСЃРµ РёР·РІР»РµС‡РµРЅРёСЏ С„Р°Р№Р» Р±С‹Р» РїРѕРІСЂРµР¶РґС‘РЅ:(\n");
 			fflush(newFile);
 			if (fclose(newFile) == -1)
 				CLOSING_FILE_ERR
@@ -123,7 +127,7 @@ int extractFiles(List **listOfFiles,FILE *archive)
 		if (count == 1)  *listOfFiles = NULL;
 		if (*listOfFiles)
 		{
-			printf("[WARNING:] Следующие файлы отсутствуют в архиве\n");
+			printf("[WARNING:] РЎР»РµРґСѓСЋС‰РёРµ С„Р°Р№Р»С‹ РѕС‚СЃСѓС‚СЃС‚РІСѓСЋС‚ РІ Р°СЂС…РёРІРµ\n");
 			printLinkedList(*listOfFiles);
 		}
 	}

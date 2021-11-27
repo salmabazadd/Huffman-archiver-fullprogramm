@@ -33,12 +33,14 @@
 #define COMPRESSED 1
 #define NOTCOMPRESSED 0
 #define NODE -1
-/*Ограничение до которого файл будет просто переписываться без сжатия*/
+
+/*РћРіСЂР°РЅРёС‡РµРЅРёРµ РґРѕ РєРѕС‚РѕСЂРѕРіРѕ С„Р°Р№Р» Р±СѓРґРµС‚ РїСЂРѕСЃС‚Рѕ РїРµСЂРµРїРёСЃС‹РІР°С‚СЊСЃСЏ Р±РµР· СЃР¶Р°С‚РёСЏ*/
+
 #define LIMIT_FOR_COMPRESSION 50
 /*for accsess*/
 #define ACCESSDENIED																	\
 {																						\
-	printf("В каталоге уже имеется файл с таким названием и он закрыт для записи:(");	\
+	printf("Р’ РєР°С‚Р°Р»РѕРіРµ СѓР¶Рµ РёРјРµРµС‚СЃСЏ С„Р°Р№Р» СЃ С‚Р°РєРёРј РЅР°Р·РІР°РЅРёРµРј Рё РѕРЅ Р·Р°РєСЂС‹С‚ РґР»СЏ Р·Р°РїРёСЃРё:(");	\
 	return 0;																			\
 }
 
@@ -78,23 +80,29 @@ typedef struct {
 	unsigned short checkSum;
 	char lengthName;
 	char name[256];
-	char flags;// 0 -если не сжатый
+	char flags;// 0 -РµСЃР»Рё РЅРµ СЃР¶Р°С‚С‹Р№
 	char compression;
 	UINT64 size;
 } Info;
-/*Список файлов для добавления/извлечения/удаления*/
+
+/*РЎРїРёСЃРѕРє С„Р°Р№Р»РѕРІ РґР»СЏ РґРѕР±Р°РІР»РµРЅРёСЏ/РёР·РІР»РµС‡РµРЅРёСЏ/СѓРґР°Р»РµРЅРёСЏ*/
+
 typedef struct List {
 	char *file;
 	struct List *next;
 } List;
 void printHelp();
 int toggleSwitch(char* operation, int amount, char *param[]);
-//операции со списком
+
+//РѕРїРµСЂР°С†РёРё СЃРѕ СЃРїРёСЃРєРѕРј
+
 void adding(List **head, char *fileName);
 void printLinkedList(List *head);
 makeListOfFiles(int argc, char* argv[], List **head);
 int deleteByValue(List **head, char *fileName);
-//Вспомогательные функции архиватора
+
+//Р’СЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹Рµ С„СѓРЅРєС†РёРё Р°СЂС…РёРІР°С‚РѕСЂР°
+
 int fileExists(char * filename);
 int accessRights(char *fileName, int mode);
 char *uniqName();
@@ -107,10 +115,12 @@ double compressionRatio(double firstSize, double lastSize);
 void crc16(unsigned char * pcBlock, unsigned short len, unsigned short* crc);
 char checkUssd(char* archiveName);
 void computeCRC(char *buf, FILE *inputFile, unsigned short *crc, UINT64 size, char withShift);
-//Основные функции архиватора
+
+//РћСЃРЅРѕРІРЅС‹Рµ С„СѓРЅРєС†РёРё Р°СЂС…РёРІР°С‚РѕСЂР°
+
 int addFiles(char *archiveName, char **fileNames, int *amountOfFiles, Info **ptrOnStruct);
 char delete(char *archiveName, char *fileName, Info **ptrOnStruct);
 void showInfo(char* archiveName, Info **ptrOnStruct);
-char integrityСheck(char *archiveName, Info **ptrOnStruct, char **file);
+char integrityCheck(char *archiveName, Info **ptrOnStruct, char **file);
 int extractFiles(List **listOfFiles, FILE *archive);
 #endif

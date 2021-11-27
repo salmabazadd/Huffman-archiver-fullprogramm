@@ -1,12 +1,13 @@
-#include "header.h";
-char integrityÑheck(char *archiveName, Info **ptrOnStruct,char **file)
+#include "header.h"
+
+char integrityCheck(char *archiveName, Info **ptrOnStruct,char **file)
 {
 	FILE *archive = NULL;
 	char *data = NULL;
 	unsigned short currentCheckSum;
 	if (!fileExists(archiveName))
 	{
-		printf("Àðõèâ %s íå ñóùåñòâóåò\n", archiveName);
+		printf("ÐÑ€Ñ…Ð¸Ð² %s Ð½Ðµ ÑÑƒÑ‰ÐµÑÑ‚Ð²ÑƒÐµÑ‚\n", archiveName);
 	}
 	if ((archive = fopen(archiveName, "rb")) == NULL)
 		OPEN_ERR;
@@ -31,8 +32,10 @@ char integrityÑheck(char *archiveName, Info **ptrOnStruct,char **file)
 				flagErorr = 1;
 				READING_DATA_ERR
 			}
-			//ñîõðàíåíèÿ ôàéëà äëÿ âûâîäà îøèáêè ôîðìàòà:
-			//ïðîèçîøëà îøèáêà â ôàéëå ....
+			
+//ÑÐ¾Ñ…Ñ€Ð°Ð½ÐµÐ½Ð¸Ñ Ñ„Ð°Ð¹Ð»Ð° Ð´Ð»Ñ Ð²Ñ‹Ð²Ð¾Ð´Ð° Ð¾ÑˆÐ¸Ð±ÐºÐ¸ Ñ„Ð¾Ñ€Ð¼Ð°Ñ‚Ð°:
+//Ð¿Ñ€Ð¾Ð¸Ð·Ð¾ÑˆÐ»Ð° Ð¾ÑˆÐ¸Ð±ÐºÐ° Ð² Ñ„Ð°Ð¹Ð»Ðµ ....
+
 			(*file) = (char*)malloc(((*ptrOnStruct)->lengthName) + 1);
 			strncpy((*file), (*ptrOnStruct)->name, (*ptrOnStruct)->lengthName);
 			(*file)[(*ptrOnStruct)->lengthName] = '\0';
@@ -54,12 +57,16 @@ char integrityÑheck(char *archiveName, Info **ptrOnStruct,char **file)
 			}
 			if ((*ptrOnStruct)->flags == COMPRESSED) {
 				(*ptrOnStruct)->size -= sizeof(UINT64);
-				//ñäâèã íà ñëóæåáíóþ èíôîðìàöèþ â çàêîäèðîâàííîì ôàéëå
+				
+//ÑÐ´Ð²Ð¸Ð³ Ð½Ð° ÑÐ»ÑƒÐ¶ÐµÐ±Ð½ÑƒÑŽ Ð¸Ð½Ñ„Ð¾Ñ€Ð¼Ð°Ñ†Ð¸ÑŽ Ð² Ð·Ð°ÐºÐ¾Ð´Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð½Ð¾Ð¼ Ñ„Ð°Ð¹Ð»Ðµ
+
 				_fseeki64_nolock(archive, sizeof(UINT64), SEEK_CUR);
 			}
 			if ((data = (char*)malloc(SizeOfBuf)) == NULL)
 				ALLOC_MEMORY_ERR
-			//ñðàâíåíèå êîíòðîëüíûõ ñóìì
+			
+//ÑÑ€Ð°Ð²Ð½ÐµÐ½Ð¸Ðµ ÐºÐ¾Ð½Ñ‚Ñ€Ð¾Ð»ÑŒÐ½Ñ‹Ñ… ÑÑƒÐ¼Ð¼
+
 			currentCheckSum = CRC;
 			computeCRC(data, archive, &currentCheckSum, (*ptrOnStruct)->size, NOSHIFT);
 			free(data);

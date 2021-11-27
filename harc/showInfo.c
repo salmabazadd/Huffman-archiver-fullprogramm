@@ -4,21 +4,26 @@ void showInfo(char* archiveName, Info **ptrOnStruct)
 	FILE* archive = NULL;
 	if (!fileExists(archiveName))
 	{
-		printf("Àðõèâ %s íå ñóùåñòâóåò\n", archiveName);
+		printf("ÐÑ€Ñ…Ð¸Ð² %s Ð½Ðµ ÑÑƒÑ‰ÐµÑÑ‚Ð²ÑƒÐµÑ‚\n", archiveName);
 	}
 	if ((archive = fopen(archiveName, "rb")) == NULL)
 		OPEN_ERR
 	UINT64 endOFFile = getSize(archive);
 	if (endOFFile == 0)
 	{
-		printf("[WARNING:]Àðõèâ %s ïóñò:(\n",archive);
+		printf("[WARNING:]ÐÑ€Ñ…Ð¸Ð² %s Ð¿ÑƒÑÑ‚:(\n",archive);
+
 		return;
 	}
-	//îäíîêðàòíîå ÷òåíèå ñèãíàòóðû
+
+	//Ð¾Ð´Ð½Ð¾ÐºÑ€Ð°Ñ‚Ð½Ð¾Ðµ Ñ‡Ñ‚ÐµÐ½Ð¸Ðµ ÑÐ¸Ð³Ð½Ð°Ñ‚ÑƒÑ€Ñ‹
+
 	if (_fseeki64_nolock(archive, SIZE_SIGNATURE, SEEK_SET) != 0)
 		FSEEK_ERR
-	printf("Èíôîðìàöèÿ î ôàéëàõ â àðõèâå %s:\n",shortNameOnly(archiveName));
-	printf("Èìÿ ôàéëà    Ðàçìåð ôàéëà  Ñæàòûé/íåñæàòûé   %%Ñæàòèÿ\n");
+	
+			printf("Ð˜Ð½Ñ„Ð¾Ñ€Ð¼Ð°Ñ†Ð¸Ñ Ð¾ Ñ„Ð°Ð¹Ð»Ð°Ñ… Ð² Ð°Ñ€Ñ…Ð¸Ð²Ðµ %s:\n",shortNameOnly(archiveName));
+			printf("Ð˜Ð¼Ñ Ñ„Ð°Ð¹Ð»Ð° Ð Ð°Ð·Ð¼ÐµÑ€ Ñ„Ð°Ð¹Ð»Ð° Ð¡Ð¶Ð°Ñ‚Ñ‹Ð¹/Ð½ÐµÑÐ¶Ð°Ñ‚Ñ‹Ð¹ %%Ð¡Ð¶Ð°Ñ‚Ð¸Ñ\n");
+
 	while ((ftell(archive))!= endOFFile)
 	{
 		if ((fread(&((*ptrOnStruct)->checkSum), SIZE_CHECKSUM, 1 , archive)) != 1)
@@ -37,7 +42,9 @@ void showInfo(char* archiveName, Info **ptrOnStruct)
 			FSEEK_ERR
 	for(int i=0; (i<(*ptrOnStruct)->lengthName);i++)
 		printf("%c", (*ptrOnStruct)->name[i]);
-	/*êðàñèâûé âûâîä*/
+
+/*ÐºÑ€Ð°ÑÐ¸Ð²Ñ‹Ð¹ Ð²Ñ‹Ð²Ð¾Ð´*/
+
 		if ((*ptrOnStruct)->size < 1024)
 		{
 			printf("%9llu%-10s", (*ptrOnStruct)->size, BYTE);
@@ -63,8 +70,8 @@ void showInfo(char* archiveName, Info **ptrOnStruct)
 				}
 			}
 		}
-	if ((*ptrOnStruct)->flags == ZERO) printf("%8s", "Íå ñæàòûé");
-		else printf("%8s", "Cæàòûé");
+	if ((*ptrOnStruct)->flags == ZERO) printf("%8s", "ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+		else printf("%8s", "Cï¿½ï¿½ï¿½ï¿½ï¿½");
 	printf("%15d%s", (*ptrOnStruct)->compression, "%\n");
 	}
 	if (fclose(archive) == -1)
